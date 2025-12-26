@@ -53,8 +53,11 @@ jobs:
           build-args: |
             KUBECTL_VERSION=${{ matrix.version }}
           cosign: true
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
           image-extra-tags: |
             ghcr.io/${{ github.repository }}:${{ matrix.version }}
+            ${{ github.repository }}:${{ matrix.version }}
           image-name: ghcr.io/${{ github.repository }}
           kubescape: true
 
