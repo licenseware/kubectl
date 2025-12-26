@@ -1,6 +1,8 @@
 # kubectl Docker Image
 
 [![GitHub release](https://img.shields.io/github/v/release/kubernetes/kubernetes?label=ghcr.io/licenseware/kubectl&logo=docker&logoColor=white)](https://github.com/kubernetes/kubernetes/releases)
+[![Docker Hub](https://img.shields.io/docker/pulls/licenseware/kubectl?logo=docker&logoColor=white)](https://hub.docker.com/r/licenseware/kubectl)
+[![Docker Image Size](https://img.shields.io/docker/image-size/licenseware/kubectl?logo=docker&logoColor=white)](https://hub.docker.com/r/licenseware/kubectl)
 [![CI](https://github.com/licenseware/kubectl/actions/workflows/ci.yml/badge.svg)](https://github.com/licenseware/kubectl/actions/workflows/ci.yml)
 [![Vulnerabilities](https://img.shields.io/badge/vulnerabilities-scanned-green?logo=security&logoColor=white)](https://github.com/licenseware/kubectl/security)
 [![Alpine Version](https://img.shields.io/badge/alpine-3-blue?logo=alpine-linux&logoColor=white)](https://alpinelinux.org/)
