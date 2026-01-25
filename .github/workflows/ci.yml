@@ -54,6 +54,7 @@ jobs:
     if: needs.check-kubectl-versions.outputs.versions != '[]'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         version: ${{ fromJson(needs.check-kubectl-versions.outputs.versions) }}
     steps:
