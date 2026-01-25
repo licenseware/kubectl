@@ -10,6 +10,12 @@ on:
       - main
   schedule:
     - cron: "0 0 * * 0"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force rebuild all images even if they exist'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -28,14 +34,18 @@ jobs:
         id: check-versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE: ${{ inputs.force }}
         run: |
           set -eux
 
-          EXISTING_TAGS=$(regctl tag ls ghcr.io/${{ github.repository }} 2>/dev/null | jq -R . | jq -s .)
-
           ALL_VERSIONS=$(gh release list --jq '[.[].tagName]' --json tagName -R kubernetes/kubernetes)
 
-          NEW_VERSIONS=$(echo "$ALL_VERSIONS" | jq -c --argjson existing "$EXISTING_TAGS" '[.[] | select(. as $v | $existing | index($v) | not)]')
+          if [ "$FORCE" = "true" ]; then
+            NEW_VERSIONS="$ALL_VERSIONS"
+          else
+            EXISTING_TAGS=$(regctl tag ls ghcr.io/${{ github.repository }} 2>/dev/null | jq -R . | jq -s .)
+            NEW_VERSIONS=$(echo "$ALL_VERSIONS" | jq -c --argjson existing "$EXISTING_TAGS" '[.[] | select(. as $v | $existing | index($v) | not)]')
+          fi
 
           echo "versions=${NEW_VERSIONS}" | tee -a "$GITHUB_OUTPUT"
 
