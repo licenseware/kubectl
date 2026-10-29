@@ -29,7 +29,7 @@ jobs:
       versions: ${{ steps.check-versions.outputs.versions }}
     steps:
       - name: Install regctl
-        uses: iarekylew00t/regctl-installer@v4
+        uses: iarekylew00t/regctl-installer@c2202c17a65fe59371c71ecc169c9e58c3710a15 # v4.0.16
       - name: Check for new kubectl versions
         id: check-versions
         env:
@@ -59,7 +59,7 @@ jobs:
         version: ${{ fromJson(needs.check-kubectl-versions.outputs.versions) }}
     steps:
       - name: Build Docker for kubectl ${{ matrix.version }}
-        uses: meysam81/build-docker@main
+        uses: meysam81/build-docker@4702dd58cc9a0c0499fbdfe1e1bf8c23d4bc7c8c # v1.7.3
         with:
           build-args: |
             KUBECTL_VERSION=${{ matrix.version }}
@@ -81,9 +81,9 @@ jobs:
       issues: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: PR Labeler
-        uses: srvaroa/labeler@master
+        uses: srvaroa/labeler@bf262763a8a8e191f5847873aecc0f29df84f957 # v1.14.0
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
