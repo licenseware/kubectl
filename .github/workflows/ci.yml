@@ -59,7 +59,7 @@ jobs:
         version: ${{ fromJson(needs.check-kubectl-versions.outputs.versions) }}
     steps:
       - name: Build Docker for kubectl ${{ matrix.version }}
-        uses: meysam81/build-docker@4702dd58cc9a0c0499fbdfe1e1bf8c23d4bc7c8c # v1.7.3
+        uses: meysam81/build-docker@6d4a370d0cf22b35eb467698607b351532b2b163 # v1.7.4
         with:
           build-args: |
             KUBECTL_VERSION=${{ matrix.version }}
