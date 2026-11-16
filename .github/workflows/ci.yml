@@ -9,7 +9,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: "17 4 * * 1"
   workflow_dispatch:
     inputs:
       force:
@@ -28,6 +28,10 @@ jobs:
     outputs:
       versions: ${{ steps.check-versions.outputs.versions }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install regctl
         uses: iarekylew00t/regctl-installer@c2202c17a65fe59371c71ecc169c9e58c3710a15 # v4.0.16
       - name: Check for new kubectl versions
@@ -35,12 +39,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE: ${{ inputs.force }}
+          EVENT: ${{ github.event_name }}
         run: |
           set -eux
 
           ALL_VERSIONS=$(gh release list --jq '[.[].tagName]' --json tagName -R kubernetes/kubernetes)
 
-          if [ "$FORCE" = "true" ]; then
+          if [ "$EVENT" = "schedule" ]; then
+            NEW_VERSIONS=$(sed -n "s/^ENV KUBECTL_DEFAULT_VERSION //p" Dockerfile | jq -R "[.]" -c)
+          elif [ "$FORCE" = "true" ]; then
             NEW_VERSIONS="$ALL_VERSIONS"
           else
             EXISTING_TAGS=$(regctl tag ls ghcr.io/${{ github.repository }} 2>/dev/null | jq -R . | jq -s .)
@@ -58,6 +65,9 @@ jobs:
       matrix:
         version: ${{ fromJson(needs.check-kubectl-versions.outputs.versions) }}
     steps:
+      - name: Date tag
+        id: date
+        run: echo "today=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
       - name: Build Docker for kubectl ${{ matrix.version }}
         uses: meysam81/build-docker@4702dd58cc9a0c0499fbdfe1e1bf8c23d4bc7c8c # v1.7.3
         with:
@@ -69,6 +79,7 @@ jobs:
           image-extra-tags: |
             ghcr.io/${{ github.repository }}:${{ matrix.version }}
             ${{ github.repository }}:${{ matrix.version }}
+            ghcr.io/${{ github.repository }}:${{ matrix.version }}-${{ steps.date.outputs.today }}
           image-name: ghcr.io/${{ github.repository }}
           kubescape: true
 
